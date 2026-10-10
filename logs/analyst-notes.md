@@ -175,9 +175,62 @@ Supporting Screenshot:
 
 **Examination Method:** Font color changed for viewing.
 
-**Next Step:** Examine `jim.tomato`'s files for any potential leads on data exfiltration.
+**Next Step:** Examine `jim.tomato`'s recent files for any potential leads on data exfiltration.
 Supporting Screenshot:
 ![Jim Tomato Firing](/screenshots/JimTomatoFireConcealedLine.png)
 
-##
+## 2026-10-10 12:15 
+**Observation:** `jim.tomato`'s `AppData\Roaming\Microsoft\Windows\Recent` folder contained `CompanySecrets.lnk`. Exported and recorded the SHA256 hash of the shortcut in the evidence log as E016.
+
+**Assessment:** The shortcut's name makes it a lead for suspected exfiltration. 
+
+**Next Step:** Examine its target path and metadata to determine the file or folder it references.
+
+## 2026-10-10 12:21
+**Observation:** The target path of `CompanySecrets.lnk` (E016) is `C:\Users\jim.tomato\Desktop\CompanySecrets.docx`. However, looking at the referenced folder, there is no CompanySecrets.docx presently in that directory listing.
+
+**Assessment:** The E016 shortcut references a document unavailable at the location it is connected to. Possible explanations could be deletion, renaming, or movement of the file. 
+
+**Next Step:** Document1.docx on is present on Jim's desktop but was previously examined and found to be clean and has no relationship to `CompanySecrets.docx`. Examine his recycle bin and other folders for references to `CompanySecrets.docx`.
+
+## 2026-10-10 12:43
+**Observation:** There are four files inside `jim.tomato`'s SID associated recycle bin directory. $IK6JCRY.docx (E017) and $IQ1FSDY.docx (E018) are metadata files and they correspond to the content files $RK6JCRY.docx (E019) and $RQ1FSDY.docx (E020). Niether eximined metadata record contains the name `CompanySecrets.docx`.
+
+**Assessment:** The two files have no established relationship to `CompanySecrets.docx` further investigation of the documents is required.
+
+## 2026-10-10 12:51
+**Observation:** `$RK6JCRY.docx` is a document titled `Document1.txt`. It just contains the text "Nothing to see here!". Attempting to open `$RQ1FSDY.docx` in LiberOffice writer results in notification that the document is corrupt. Attempting to repair a copy with LibreOffice Writer failed.
+
+**Next Step:** Attempt to examine the internal file structure using 7-zip.
+
+## 2026-10-10 12:58
+**Observation:** Inspecting the internal structure of `$RQ1FSDY.docx` with 7-zip revealed the main body text is "Nothing to see here!".
+
+**Assessment:** There is no link between this document and `CompanySecrets.docx` or suspected exfiltration. The cause of the file corruption remains unknown.
+
+
+## 2026-10-10 13:20
+**Observation:** Found `jim.tomato` uses Google Chrome as a web browser and exported the `History` file from it (E021). Examined the file using DB Browser for SQLite. Found several suspicious searches in the `urls` table: "is it illegal to leak company secrets - Google Search", "how to hack into a computer after you are gone - Google Search", followed by pages explaining company secret disclosure and laws. The table also has Slack sign-in and Fruit Inc workspace URLs, including "https://fruitincworkspace.slack.com/"
+
+**Assessment:** Browser records in Jim's profile provided concerning leads in regards to leaking company secrets. Together with E016's "CompanySecrets.docx", this requires further investigation into `jim.tomato`'s activity.
+
+## 2026-10-10 13:34 America/Denver
+
+**Action performed:** Exported `d38a3ea7ec79fbed.automaticDestinations-ms` from Jim’s `Recent\AutomaticDestinations` directory in E003. Calculated its hash and recorded it as E022.
+
+**Observation:** Text examination showed E022 had refernces to `C:\Users\jim.tomato\Desktop\Document1.docx` and `C:\Users\jim.tomato\Desktop\CompanySecrets.docx`.
+
+**Assessment:** E022 again referenced `CompanySecrets.docx`, consistent with observations of E016.
+
+**Next Step:** Examine E022 in JumpList Explorer to distinguish its entries and inspect their target paths and timestamps.
+
+## 2026-10-10 13:41
+**Observation:** Examined E022 using JumpList Explorer. It associated the artifact with LiberOffice Writer and shows three seperate entries referencing `Untitled 1.docx`, `CompanySecrets.docx`, and `Document1.docx` on `jim.tomato`'s desktop. The one referencing `CompanySecret.docx` is entry number 1 and has an interaction count of 1.
+
+**Assessment:** The Jump List supports interaction with the path of E016 in Jim's profile. Company Secrets and Document1 are distinct entries and this doesn't establish any direct relationship between the two.
+
+Supporting Screenshot
+![JumpList Explorer](/screenshots/JumpListExplorer.png)
+
+
 
