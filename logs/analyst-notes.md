@@ -114,9 +114,43 @@ Supporting Screenshot:
 
 **Assessment:** It would appear this document is meant to represent simulated corporate secret information in the lab. This makes it relevant to the suspected exfiltration investigation because it is considered sensitive corporate data. Its presence under user `tim.apple`'s folder doesn't establish who created, accessed, copied, or transferred it.
 
+**Next Step:** Since this is sensitive company secrets that could have been exfiltrated, looking for any references to this in other artifacts is a good idea.
+
 Supporting screenshot:
 ![secrets.odt contents in LibreOffice](/screenshots/SecretsODTDocumentContents.png)
 
+
+## 2026-10-09 17:50
+**Observation:** The expected `Microsoft\Windows\Recent` path is missing from `tim.apple`'s `AppData\Roaming` folder. There is however a Mozilla folder inside `tim.apple`'s `AppData\Roaming`. 
+
+**Assessment:** This means windows recent-item artifacts are unavailable at this location in the supplied evidence. It doesn't establish secrets.odt was never accessed, though.
+
+## 2026-10-09 18:06
+**Action Performed:** Exported the `places.sqlite` file from one of `tim.apple`'s Firefox profiles (E008) for examination.
+
+**Observation:** There are two firefox profiles, however profile `xn6cy72r.default` only contains times.json. The profile of interest is `d6kc02w6.default-release`.  
+
+**Next Step:** Examine E008 in db browser for sqlite.
+
+
+## 2026-10-09 18:17
+
+**Observation:** E008’s moz_places table contains entries titled “slack - Google Search,” “slack download - Google Search,” “Windows | Downloads Beta | Slack,” and “SlackSetup.exe.”
+
+**Assessment:** These entries show that the Firefox profile associated with `tim.apple`'s directory has searches and activity related to attempting to install slack onto the system. There is no connection to `secret.odt` or establishment of exfiltration. Further investigation is required before prioritizing Slack as a lead.
+
+**Next Step:** Continue looking through user accounts for any suspicious files or leads.
+
+Supporting Screenshot
+![SQlite browser view](/screenshots/SQLiteBrowserSlackDowloadAttempted.png)
+
+## 2026-10-09 19:04
+**Observation:** While reviewing user files to find potential leads, a file, `vegetable` was found in `miriam.grapes`' `Pictures` folder. This file is oddly missing an extension in FTK Imager. So, using the hex view and looking at the first six bytes, it was possible to determine it is a 7-zip archive missing its extension. Catalogued `vegetable` as E009.
+
+##2026-10-09 19:10
+**Observation:** Examined E009 using 7-zip. The archive contained a folder `pears` containing 3 .jpg images: `pear1`,`pear2`,`pear3`. All three images depict a pear shaped phone with one image showing a person holding the pear shaped phone up to their camera.
+
+**Assessment:** The archive contains imagery of phones that could potentially be related to the E007 document mentioning a new fruit phone. The archive's missing extension doesn't explicitly prove attempted concealment.
 
 
 
