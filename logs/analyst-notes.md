@@ -232,5 +232,48 @@ Supporting Screenshot:
 Supporting Screenshot
 ![JumpList Explorer](/screenshots/JumpListExplorer.png)
 
+**Observation:** E022 entry 2 has `C:\Users\jim.tomato\Desktop\CompanySecrets.docx` in its LocalPath field. and identifies the hostname of desktop-3a4nlvq. It displays DestList creation as 2020-04-10 05:32:24, DestList last modification as 2020-04-11 23:16:21, with interaction count of 1.
+
+*Assessment:** The provided timestamps require further correlation.
+
+## 2026-10-10 13:51
+**Observation:** Using JumpList explorer to compare the `CompanySecrets.docx` and `Document1.docx` entries showed they have different FileDroid identifiers and sizes. The MFT Identifier of `CompanySecrets.docx` is 140007
+
+**Assessment:** This supports `Document1.docx` being a separate file rather than a renaming of `CompanySecrets.docx`.
+
+## 2026-10-10 14:28
+**Observation:** Examined E023 using MFTECmd for entry 140007. The returned record has sequence 7, is marked InUse, and records the filename `file.xml`. Its ID matches the File Droid recorded for `CompanySecrets.docx`. Its parent record is `0x282EB/0xA`.
+
+**Assessment:** Matching record/sequence and object identifiers strongly support that the file previously referenced as `CompanySecrets.docx` is now recorded as `file.xml`. This supports a filename change; the current parent path and file contents require examination.
+
+Supporting Screenshot
+![MFTECmd](/screenshots/MFTEcmdFirstQuery.png)
+
+
+## 2026-10-10 14:35
+**Observation:** E022’s shortcut for `CompanySecrets.docx` records MFT entry/sequence `140007/7` and File Droid `a88a8ba5-7aec-11ea-b941-000c29727385`. Found entry 140007 in E023 using MFTECmd. The returned data matched, but recorded its filename as `file.xml`.
+
+Following its parent reference, `0x282EB/0xA`, identified the directory `$RD4SUNL`. Finding its parent, `0x2257B/0x2`, showed this directory `S-1-5-21-2446097003-76624807-2828106174-1003`. THis directory is Jim's recycle bin.  `$ID4SUNL` metadata file was in the recycle bin alongside a corresponding directory of the contents `$RD4SUNL`.
+
+**Assessment:** Following the MFT entry and identifiers support that `CompanySecrets.docx` is now `file.xml` within `jim.tomato`'s recycle bin directory `$RD4SUNL`. The metadata identifies that the original location was Jim's desktop as `Document1.docx`. This supports a changed filename and location followed by recycling the directory it was contained in.
+
+## 2026-10-10 14:46
+**Observation:** E025 begins with the zip hex signature. Examining it with 7-zip showed that it contains `word\document.xml`. Within `document.xml` the main body text is titled "Fruit inc. company secrets" and contains claims: "Tim is sleeping with his secretary", "Miriam is copying designs from the iPhone", "Suzy was only hired for her looks", and "Customer data is not stored securely".
+
+**Assessment:** The Word document structure is inconsistent with E025's .xml extension. Combined with matching MFT entry number and object identifiers, this shows it is the document previously referenced as `CompanySecrets.docx`. Any transfer or exfiltration of this is still unverified.
+
+Supporting Screenshot
+![file.xmlContents](/screenshots/fileXMLContentsCompanySecrets.png)
+
+## 2026-10-10 14:54
+**Observation:** Examination of E024 using RBCmd showed the containing folders deletion timestamp was 2020-04-11 17:23:48. The original path was `C:\Users\jim.tomato\Desktop\Document1.
+
+**Assessment:** The recycle bin metadata supports that the Document1 folder containing the file correlated with CompanySecrets.exe was recycled. 
+
+## 2026-10-10 14:54
+**Observation:** Turning attention back to Jim's Chrome history, he has an entry on the downloads table for `C:\Users\jim.tomato\Downloads\SlackSetup.exe`. Following this lead to jim's leveldb directory, there is `000003.log` (E026). This is a text file with some readable strings that include references to "slack.com","app.slack.com", and "fruitincworkspace.slack.com". 
+
+**Assessment:** E026 corroborates the slack related activity associated with Jim's Chrome profile. No readable references to CompanySecrets.docx or file.xml uploads are visible.
+
 
 
