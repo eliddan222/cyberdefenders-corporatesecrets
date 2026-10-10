@@ -147,11 +147,37 @@ Supporting Screenshot
 ## 2026-10-09 19:04
 **Observation:** While reviewing user files to find potential leads, a file, `vegetable` was found in `miriam.grapes`' `Pictures` folder. This file is oddly missing an extension in FTK Imager. So, using the hex view and looking at the first six bytes, it was possible to determine it is a 7-zip archive missing its extension. Catalogued `vegetable` as E009.
 
-##2026-10-09 19:10
-**Observation:** Examined E009 using 7-zip. The archive contained a folder `pears` containing 3 .jpg images: `pear1`,`pear2`,`pear3`. All three images depict a pear shaped phone with one image showing a person holding the pear shaped phone up to their camera.
+## 2026-10-09 19:10
+**Observation:** Examined E009 using 7-zip. The archive contained a folder `pears` containing 3 .jpg images: `pear1`,`pear2`,`pear3` (E010,E011,E012). All three images depict a pear shaped phone with one image showing a person holding the pear shaped phone up to their camera.
 
 **Assessment:** The archive contains imagery of phones that could potentially be related to the E007 document mentioning a new fruit phone. The archive's missing extension doesn't explicitly prove attempted concealment.
 
+**Next Step:** Continue investigating `miriam.grapes` other files.
 
 
+## 2026-10-09 19:23
+**Observation:** `miriam.grapes`' `Downloads` folder contains two potential files of interest. `Phone_Sample_Photos.zip` and `samplePhone.jpg`. Upon examining E014 contains clip art of a phone. E013 only contained the same imagery. No audience-specific text or design information was identified.
+
+**Assessment:** Examine `miriam.grapes` firefox data to see if the clip art was possibly obtained online.
+
+## 2026-10-09 19:36
+**Observation:** In E015's moz_places table, record 8's title is "what kind of phones do vsco girls enjoy - Google Search". Record 9's title is "What is a VSCO girl? Shop the latest teen trend - CNN".
+
+**Assessment:** These records show that there is an interest in uncovering the phone preferences of VSCO girls, consistent with the lab-provided target-audience context. This doesn't establish that Miriam finalized any products for that audience or connect anything to exfiltration.
+
+Supporting Screenshot:
+![SQLite Miriam Grapes](/screenshots/VSCOSearchesInDBSQLite.png)
+
+## 2026-10-09 19:44
+**Observation:** further examination of E007 (secret.odt) revealed that there is a hidden/concealed line using white font against the white background. Changing the font color revealed that the line states plans to fire Jim Tomato.
+
+**Assessment:** This document contains concealed content relevant to Jim Tomato. This provides additional context, but doesn't support any access of the document by Jim or data exfiltration attempts.
+
+**Examination Method:** Font color changed for viewing.
+
+**Next Step:** Examine `jim.tomato`'s files for any potential leads on data exfiltration.
+Supporting Screenshot:
+![Jim Tomato Firing](/screenshots/JimTomatoFireConcealedLine.png)
+
+##
 
