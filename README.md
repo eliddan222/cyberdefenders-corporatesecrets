@@ -1,44 +1,49 @@
-# CyberDefenders Lockdown - DFIR Investigation
-A simulated digital forensics and incident response investigation of a compromised public-facing IIS server. 
+# CyberDefenders Corporate Secrets - Digital Forensics Investigation
 
-This project used a documented incident-response SOP, packet capture analysis, memory image analysis, and a recovered malware sample.
+A simulated digital forensics investigation of a suspected corporate secret exfiltration using a Windows AD1 evidence image.
 
 ## Investigation Summary
 
-Packet capture analysis uncovered automated reconnaissance against the IIS server, followed by SMB deployment of an ASPX web shell, reverse-shell connection, execution of a malicious payload through the IIS worker process, and attempted persistence through the Windows Startup folder.
+Analysis examined Windows registry hives, browser history, shortcuts, Jump Lists, MFT records, and Recycle Bin artifacts to uncover activity associated with a document containing company secrets and its potential exfiltration.
 
-The provided packet capture and memory dump were able to be correlated to reconstruct the attack and determine which behaviors could be confirmed as opposed to only observed by third-party analysis.
+Analysis of the provided artifacts revealed which user account was the lead suspect, and resulted in following a trail to find where the document was and what it contained. Following the trail required correlating MFT entry sequence numbers to correlate a shortcut to a recycled `file.xml`. Examination of `file.xml` revealed the structure of a Word document containing company secrets. 
 
-![correlatedMemoryToNetwork](/screenshots/volatilityFilteredNetscanOutput.png)
+Additional suspicious searches about exfiltration of company data were found in the browser history. However, examination of browsers` cache, Tor, and Slack artifacts did not establish any successful transfer of company secrets. The result was document interaction and recovery being substantiated, but exfiltration remained unconfirmed within the provided evidence.
+
 
 ## Tools
-- Wireshark
-- Volatility 3
-- VirusTotal
-- MITRE ATT&CK
+- FTK Imager
+- FTK Registry Viewer
+- DB Browser for SQLite
+- JumpList Explorer
+- MFTECmd
+- RBCmd
+- Hindsight
+- ChromeCacheView
+- LibreOffice Writer
+- 7-Zip
 - PowerShell
 
 ## Skills Applied
-- Network forensics
-- Windows memory forensics
-- Evidence preservation
-- Incident timeline reconstruction
-- Cross-artifact correlation
-- Malware triage
-- MITRE ATT&CK Mapping
-- IR documentation
+- Evidence preservation and integrity verification
+- Windows registry analysis
+- Browser artifact examination
+- Shortcut and Jump List analysis
+- NTFS metadata and file identifier correlation
+- Recycle Bin analysis and document recovery
+- File signature and internal structure examination
+- Evidence-based assessment and incident documentation
 
 ## Documentation
 - [Incident Response Report](docs/Incident-Report.md)
-- [Incident Response SOP](docs/IR-SOP.md)
 - [Analyst Case Notes](logs/analyst-notes.md)
 - [Evidence Integrity Log](logs/evidence-log.csv)
+- [Incident Response SOP](docs/IR-SOP.md)
 
 ## Works Cited
-- CyberDefenders Lockdown: https://cyberdefenders.org/blueteam-ctf-challenges/lockdown/
+- CyberDefenders CorporateSecrets: https://cyberdefenders.org/blueteam-ctf-challenges/corporatesecrets/
 - NIST SP 800-61 Rev. 3
 - CISA Cybersecurity Incident & Vulnerability Response Playbooks
-- MITRE ATT&CK
 
 
 
