@@ -1,4 +1,4 @@
-# Incident Response Report — INC-2026-001
+# Incident Response Report — INC-2026-002
 
 ## Executive Summary
 This simulated forensics investigation centered around potential exfiltration of company secrets. An AD1 logical evidence image was provided and analyzed. Analysis identified the host as DESKTOP-3A4NLVQ, running Windows build 16299, with six user accounts. 
@@ -88,95 +88,66 @@ Jim Tomato's chrome history database contained searches about the legality of le
 
 ### F-004 — CompanySecrets.docx Interactions
 
-**Evidence:** E002 — Network Capture; E003 — Memory Image
+**Evidence:** E016, E022
 
-The IIS server initiated a TCP connection from `10.0.2.15:49688` to `10.0.2.4:4443` that involved bidirectional communication. Memory analysis associated the connection with `w3wp.exe` PID 4332.
+`jim.tomato`'s recents folder contained references inside of `.lnk` shortcuts to a `CompanySecrets.docx`. The documents the shortcut linked to no longer existed in the given directory. Additional analysis of LibreOffice Writer Jump List revealed another reference to the same file inside Jim's account.
 
-**Assessment:** This suggested a high probability of a reverse shell connection through the IIS server's compromised worker process.
-
-**Supporting Exhibit:**
-![biderectionalCommunications](/screenshots/bidirectionalCommunications.png)
-![volatilitynetscan](/screenshots/volatilityFilteredNetscanOutput.png)
-
-### F-005 — Malicious Executable Launched Through IIS
-
-**Evidence:** E003 — Memory Image
-
-Process-tree analysis showed `w3wp.exe` PID 4332 had a child process: `updatenow.exe` PID 900.
-
-**Assessment:** The parent-child relationship connects execution of
-`updatenow.exe` directly to the compromised IIS application process and
-supports post-exploitation code execution through the web server.
+**Assessment:** The shortcut and jump list indicated interaction of `CompanySecrets.docx` on Jim's profile. This provided an investigative lead into searching for what happened to the now absent document.
 
 **Supporting Exhibit:**
-![PSTree](/screenshots/volatilityWindowsPStree.png)
+![Jim Tomato's Recents](/screenshots/JimTomatoRecentsCompanySecrets.png)
+![Jump List](/screenshots/JumpListExplorer.png)
 
-### F-006 — Startup Folder Persistence
+### F-005 — Identified the Missing Document
 
-**Evidence:** E003 — Memory Image
+**Evidence:** E022,E023,E025
 
-Command-line analysis showed `updatenow.exe` executing from:
+The aforementioned Jump List entry for CompanySecrets.docx had an MFT sequence number, 140007/7 and File Droid identifier a88a8ba5-7aec-11ea-b941-000c29727385. Using these to filter through the MFT record contained in the forensic image showed the file currently associated with those identifiers was `file.xml`. Following its references it was determined to be inside of Jim Tomato's recycle bin directory as its own directory, $RD4SUNL. It also had a metadata file alongside it, $ID4SUNL, showing the original location was Jim's desktop. Opening $RD4SUNL revealed the directory had the same structure as a word document, but it was recycled as a directory instead of a `.docx`. 
 
-`C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\updatenow.exe`
-
-**Assessment:** Putting the executable inside the startup folder indicates an attempt to maintain persistence through future logins.
-
-**Supporting Exhibit:**
-![updateNowLaunchLocation](/screenshots/volatilityCommandLineUpdateNowLaunchLocation.png)
-
-### F-007 — Recovered Executable Confirmed Malicious
-
-**Evidence:** E004 — `updatenow.exe`; external threat intelligence
-
-The SHA-256 hash of `updatenow.exe` was identified as malicious by the majority of VirusTotal scanners. Threat-intelligence and sandbox analysis associated the sample with Agent Tesla, UPX packing, credential-access behavior, process injection, and external network communication.
-
-**Assessment:** External threat intelligence found the executable to be malicious. 
+**Assessment:** The matching MFT sequence number and file droid identifier strongly indicated file.xml was the document previously titled `CompanySecrets.docx`. The findings are indicative of a filename change, location change, then recycling. There is not a full establishment of who performed those actions or why.
 
 **Supporting Exhibit:**
-![virusTotalResults](/screenshots/virusTotalResults.png)
+![MFTEcmd Findings](/screenshots/MFTEcmdFirstQuery.png)
+![MFTEcmd Findings Continued](/screenshots/MFTEcmdQuery2.png)
 
-## MITRE ATT&CK Mapping
+### F-006 — Contents of Recovered Document
 
-These ATT&CK mappings are based on techniques supported by evidence in the provided artifacts. Other behaviors are excluded, as they have not been independently confirmed through the artifacts and would be supported only by third-party threat intelligence.
+**Evidence:** E025
 
-| Tactic | Technique | ID | Evidence |
-|---|---|---|---|
-| Reconnaissance | Active Scanning; Vulnerability Scanning | T1595.002 | Rapid TCP probing and Nmap NSE-based HTTP enumeration. |
-| Command and Control | Ingress Tool Transfer | T1105 | `shell.aspx` was transferred by the attacker through SMB. |
-| Persistence | Server Software Component; Web Shell | T1505.003 | `shell.aspx` was placed in a web-accessible directory and requested through IIS. |
-| Command and Control | Non-Application Layer Protocol | T1095 | A bidirectional TCP session was established from the IIS server to `10.0.2.4:4443` following execution of the web shell. |
-| Persistence / Privilege Escalation | Registry Run Keys / Startup Folder | T1547.001 | `updatenow.exe` executed from the system-wide Windows Startup directory. |
-| Stealth | Software Packing | T1027.002 | VirusTotal identified `updatenow.exe` as UPX-packed. |
+Examining the contents of the recovered `file.xml` confirmed it was previously the contents of a `.docx` file. The file had the heading "Fruit inc. company secrets" followed by claims: "Tim is sleeping with his secretary", "Miriam is copying designs from the iPhone", "Suzy was only hired for her looks", and "Customer data is not stored securely."
+
+**Assessment:** The contents of the document confirm that it contained sensitive information. The way it was recycled as a directory instead of a .docx indicates possible attempt at concealment. However, there is no established deliberate concealment attempts, and the allegations in the document cant be verified.
+
+**Supporting Exhibit:**
+![Contents of file.xml](/screenshots/fileXMLContentsCompanySecrets.png)
+
+### F-007 — Exfiltration not Established
+
+**Evidence:** E026,E027,E028,E029,E030,E031
+
+Analysis of Chrome history, Slack related local data, UserAssist and Tor history, Chrome cache, and Slack logs were unable to confirm any transfer of the document. Jim's  search history did contain searches related to exfiltration of company data. Jim's Slack data did not contain any records of uploading or sharing information contained within the document. Tor history only contained default Tor project landing pages. Using readable Slack messages from the `hansel.apricot` profile provided workplace context, but no establishment of disclosure of company secrets.
+
+**Assessment:** No transfer of the document containing company secrets could be established. Despite Jim's search activity being indicative of attempting to exfiltrate the data, there is no evidence suggesting successful transference of the data outside of the company computer. This also does not mean no transfer occurred. 
 
 
 ## Containment Recommendations
-- Isolate the compromised IIS server, maintaining only necessary forensic examination access.
-- Block all communication to the attacker's systems.
-- Disable accounts if credential compromise is possible.
-- Search other systems and the network telemetry for further potentially compromised systems.
+- Preserve all evidence, logs, and account information pertaining to the incident.
+- Observe all available email, Slack, cloud storage, and endpoint telemetry from the incident's time frame.
+- Examine records for transfers associated with the document.
 
-## Eradication
-- Remove `shell.aspx` and `updatenow.exe`.
-- Remove any additional malicious files and persistence mechanisms uncovered through investigation.
-- Patch and harden the services on the IIS that were exposed.
-- Reset any accounts and change credentials that were potentially exposed.
-- Search the rest of the enterprise for related attacker activity.
 
-## Recovery
-- Restore the server from a known good state.
-- Validate malicious files are no longer present.
-- Confirm there are no unauthorized outbound connections.
-- Bring the systems back to production only after controls, patches, and monitoring are verified to be back in working order.
-- Increase monitoring of the affected server post-recovery.
 
 ## Limitations
-- Only three artifacts were provided, limiting the scope.
-- No live access to the impacted server was possible.
-- There were several other capabilities of the malware according to external threat-intelligence that could not be treated as confirmed or denied based on the provided forensic data.
+- Analysis was limited to the supplied AD1 evidence image and examined artifacts. The package wasn't a complete sector by sector disk capture.
+- Slack related data yielded limited content, and the absence of records doesn't establish absence of uploads.
+- Tor history provided limited activity and couldn't provide the full extent of Tor activity.
+- Activity associated with a user profile doesn't guarantee the owner of the account is the one responsible.
+- Some expected artifacts were missing from where they would be listed in a directory.
+- No network records were provided, limiting the possible analysis and confirmation of a transfer occurring.
 
 ## Lessons Learned
-- The public facing IIS server should have been more hardened to reduce exposure, especially administrative protocols like SMB.
-- Outbound connections from the IIS server should be monitored for suspicious activity. The connections made in this attack did not represent typical IIS activity and should have been actively monitored.
-- The attacker was able to place the malicious ASPX file in a web-accessible location and attempt to create persistence in the Windows Startup folder. Locations like these should be monitored for for unexpected file creation, modification, and deletion.
-- Finding correlation between the memory dump and packet capture increased confidence in the investigation. The packet capture identified the suspicious activity. The memory analysis was able to associate that connection with `w3wp.exe` and linked the IIS process to execution of `updatenow.exe`.
-- External threat-intelligence was useful for identifying capabilities of the malware, but the provided findings need to be kept separated from the real incident-confirmed findings unless corroborated by the evidence.
+- Correlating Jump Lists, shortcuts, and MFT records can locate a document after filename and location changes.
+- File extensions should be checked against file signatures.
+- Initial assessments should avoid reaching conclusions until later evidence can further corroborate it.
+- Suspicious searches alone do not establish successful disclosure.
+- A defensible investigation can result in unresolved allegations when the evidence doesn't support it.
