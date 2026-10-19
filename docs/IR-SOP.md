@@ -70,7 +70,7 @@ The incident analyst will be responsible for verification that an incident has o
 6. Update this SOP if lessons from the incident reveal a process that should be improved.
 7. Mark the case as closed when investigation and documentation are complete.
 
-References
+References Informing This SOP:
 - NIST SP 800-61 Rev. 3
 - CISA Cybersecurity Incident & Vulnerability Response Playbooks
 - MITRE ATT&CK

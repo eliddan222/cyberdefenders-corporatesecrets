@@ -42,8 +42,6 @@ Additional suspicious searches about exfiltration of company data were found in 
 
 ## Works Cited
 - CyberDefenders CorporateSecrets: https://cyberdefenders.org/blueteam-ctf-challenges/corporatesecrets/
-- NIST SP 800-61 Rev. 3
-- CISA Cybersecurity Incident & Vulnerability Response Playbooks
 
 
 
