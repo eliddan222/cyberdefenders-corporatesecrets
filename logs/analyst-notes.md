@@ -31,6 +31,7 @@ Analysis is limited to the provided artifacts.
 **Observation:** Inside the registry viewer examining E004 at `\Microsoft\Windows NT\CurrentVersion` the CurrentBuild and CurrentBuildNumber are both 16299.
 
 **Assessment:** According to Microsoft's website, build number 16299 corresponds to the Windows 10 Version 1709 from late 2017.
+
 Supporting Screenshot:
 
 ![BuildNumberRegistry](/screenshots/RegistryBuildNumber.png)
