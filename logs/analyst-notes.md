@@ -32,6 +32,7 @@ Analysis is limited to the provided artifacts.
 
 **Assessment:** According to Microsoft's website, build number 16299 corresponds to the Windows 10 Version 1709 from late 2017.
 Supporting Screenshot:
+
 ![BuildNumberRegistry](/screenshots/RegistryBuildNumber.png)
 
 ## 2026-10-09 15:26
@@ -43,6 +44,7 @@ Supporting Screenshot:
 **Next Step:** Identify the hostname
 
 Supporting Screenshot:
+
 ![AccountNamesInSAMRegistry](/screenshots/RegistryAccountNames.png)
 
 ## 2026-10-09 16:04
@@ -104,8 +106,8 @@ Supporting Screenshot:
 **Assessment:** Based on filename, `secrets.odt` is of interest, so investigation should be performed on it.
 
 Supporting Screenshot:
-![timAppleDocuments](/screenshots/timAppleDocumentsFolder.png)
 
+![timAppleDocuments](/screenshots/timAppleDocumentsFolder.png)
 
 ## 2026-10-09 16:45
 **Action Performed:** opened `secrets.odt` using LibreOffice writer and inspected contents.
@@ -141,7 +143,8 @@ Supporting screenshot:
 
 **Next Step:** Continue looking through user accounts for any suspicious files or leads.
 
-Supporting Screenshot
+Supporting Screenshot:
+
 ![SQlite browser view](/screenshots/SQLiteBrowserSlackDowloadAttempted.png)
 
 ## 2026-10-09 19:04
@@ -166,6 +169,7 @@ Supporting Screenshot
 **Assessment:** These records show that there is an interest in uncovering the phone preferences of VSCO girls, consistent with the lab-provided target-audience context. This doesn't establish that Miriam finalized any products for that audience or connect anything to exfiltration.
 
 Supporting Screenshot:
+
 ![SQLite Miriam Grapes](/screenshots/VSCOSearchesInDBSQLite.png)
 
 ## 2026-10-09 19:44
@@ -176,7 +180,9 @@ Supporting Screenshot:
 **Examination Method:** Font color changed for viewing.
 
 **Next Step:** Examine `jim.tomato`'s recent files for any potential leads on data exfiltration.
+
 Supporting Screenshot:
+
 ![Jim Tomato Firing](/screenshots/JimTomatoFireConcealedLine.png)
 
 ## 2026-10-10 12:15 
@@ -229,7 +235,8 @@ Supporting Screenshot:
 
 **Assessment:** The Jump List supports interaction with the path of E016 in Jim's profile. Company Secrets and Document1 are distinct entries and this doesn't establish any direct relationship between the two.
 
-Supporting Screenshot
+Supporting Screenshot:
+
 ![JumpList Explorer](/screenshots/JumpListExplorer.png)
 
 **Observation:** E022 entry 2 has `C:\Users\jim.tomato\Desktop\CompanySecrets.docx` in its LocalPath field. and identifies the hostname of desktop-3a4nlvq. It displays DestList creation as 2020-04-10 05:32:24, DestList last modification as 2020-04-11 23:16:21, with interaction count of 1.
@@ -246,7 +253,8 @@ Supporting Screenshot
 
 **Assessment:** Matching record/sequence and object identifiers strongly support that the file previously referenced as `CompanySecrets.docx` is now recorded as `file.xml`. This supports a filename change; the current parent path and file contents require examination.
 
-Supporting Screenshot
+Supporting Screenshot:
+
 ![MFTECmd](/screenshots/MFTEcmdFirstQuery.png)
 
 
@@ -262,7 +270,8 @@ Following its parent reference, `0x282EB/0xA`, identified the directory `$RD4SUN
 
 **Assessment:** The Word document structure is inconsistent with E025's .xml extension. Combined with matching MFT entry number and object identifiers, this shows it is the document previously referenced as `CompanySecrets.docx`. Any transfer or exfiltration of this is still unverified.
 
-Supporting Screenshot
+Supporting Screenshot:
+
 ![file.xmlContents](/screenshots/fileXMLContentsCompanySecrets.png)
 
 ## 2026-10-10 14:54
